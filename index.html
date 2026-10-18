@@ -1,0 +1,285 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#111318">
+
+    <title>FlowBoard | Project Management</title>
+
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="./js/app.js" defer></script>
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <a href="#" class="brand">FlowBoard<span>.</span></a>
+
+            <p class="nav-label">WORKSPACE</p>
+
+            <nav aria-label="Main navigation">
+                <button class="nav-item active" type="button">
+                    <span aria-hidden="true">▦</span>
+                    My Projects
+                </button>
+
+                <button class="nav-item" type="button">
+                    <span aria-hidden="true">◷</span>
+                    Activity
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <span class="status-dot"></span>
+                <span>Workspace ready</span>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div>
+                    <p class="eyebrow">WORKSPACE / PROJECTS</p>
+                    <h1>My Projects</h1>
+                </div>
+
+                <button id="add-task-btn" class="primary-btn" type="button">
+                    + Add Task
+                </button>
+                
+<button id="undo-btn" type="button" class="secondary-btn" disabled>
+    Undo
+</button>
+
+<button id="redo-btn" type="button" class="secondary-btn" disabled>
+    Redo
+</button>
+
+            </header>
+
+            <section class="welcome">
+                <div>
+                    <p class="eyebrow">YOUR WORKSPACE</p>
+                    <h2>Make progress visible.</h2>
+                    <p class="muted">
+                        Plan your work, track your progress, and get things done.
+                    </p>
+                </div>
+
+                <div class="project-stat">
+                    <span class="muted">Total tasks</span>
+                    <strong id="task-count">0</strong>
+                </div>
+            </section>
+            
+<section class="filter-toolbar" aria-label="Search and filter tasks">
+    <div class="search-field">
+        <label for="task-search">Search tasks</label>
+        <input
+            id="task-search"
+            type="search"
+            placeholder="Search by title or description..."
+        >
+    </div>
+
+    <div class="filter-field">
+        <label for="status-filter">Status</label>
+        <select id="status-filter">
+            <option value="all">All statuses</option>
+            <option value="todo">To Do</option>
+            <option value="in-progress">In Progress</option>
+            <option value="done">Done</option>
+        </select>
+    </div>
+
+    <div class="filter-field">
+        <label for="priority-filter">Priority</label>
+        <select id="priority-filter">
+            <option value="all">All priorities</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+        </select>
+    </div>
+
+    <div class="filter-field">
+        <label for="sort-tasks">Sort by</label>
+        <select id="sort-tasks">
+            <option value="default">Default order</option>
+            <option value="title-asc">Title: A–Z</option>
+            <option value="title-desc">Title: Z–A</option>
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="priority">Priority: High to Low</option>
+        </select>
+    </div>
+    
+<fieldset class="label-filter-group">
+    <legend>Filter by Labels</legend>
+
+    <div class="label-filter-options">
+        <label>
+            <input type="checkbox" name="label-filter" value="frontend">
+            Frontend
+        </label>
+
+        <label>
+            <input type="checkbox" name="label-filter" value="backend">
+            Backend
+        </label>
+
+        <label>
+            <input type="checkbox" name="label-filter" value="bug">
+            Bug
+        </label>
+
+        <label>
+            <input type="checkbox" name="label-filter" value="feature">
+            Feature
+        </label>
+
+        <label>
+            <input type="checkbox" name="label-filter" value="documentation">
+            Documentation
+        </label>
+    </div>
+</fieldset>
+
+
+    <button id="reset-filters-btn" type="button" class="secondary-btn">
+        Reset
+    </button>
+</section>
+
+            <section class="board" aria-label="Task board">
+                <div class="board-column" data-status="todo">
+                    <div class="column-heading">
+                        <h3>To Do</h3>
+                        <span class="column-count">0</span>
+                    </div>
+
+                    <div class="task-list" id="todo-list"></div>
+                </div>
+
+                <div class="board-column" data-status="in-progress">
+                    <div class="column-heading">
+                        <h3>In Progress</h3>
+                        <span class="column-count">0</span>
+                    </div>
+
+                    <div class="task-list" id="in-progress-list"></div>
+                </div>
+
+                <div class="board-column" data-status="done">
+                    <div class="column-heading">
+                        <h3>Done</h3>
+                        <span class="column-count">0</span>
+                    </div>
+
+                    <div class="task-list" id="done-list"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+<dialog id="task-dialog" class="task-dialog">
+    <form id="task-form">
+        <div class="dialog-heading">
+            <div>
+                <p class="eyebrow">TASK MANAGEMENT</p>
+                <h2 id="dialog-title">Create a task</h2>
+            </div>
+
+            <button
+                id="close-dialog-btn"
+                class="close-btn"
+                type="button"
+                aria-label="Close dialog"
+            >×</button>
+        </div>
+
+        <label for="task-title">Task title</label>
+        <input
+            id="task-title"
+            name="title"
+            type="text"
+            placeholder="e.g. Complete JavaScript project"
+            maxlength="100"
+            required
+        >
+
+        <label for="task-description">Description</label>
+        <textarea
+            id="task-description"
+            name="description"
+            placeholder="What needs to be done?"
+            maxlength="500"
+            rows="3"
+        ></textarea>
+
+        <label for="task-priority">Priority</label>
+        <select id="task-priority" name="priority">
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+        </select>
+        
+<fieldset class="label-fieldset">
+    <legend>Task Labels</legend>
+
+    <div class="label-options">
+        <label>
+            <input type="checkbox" name="task-label" value="frontend">
+            Frontend
+        </label>
+
+        <label>
+            <input type="checkbox" name="task-label" value="backend">
+            Backend
+        </label>
+
+        <label>
+            <input type="checkbox" name="task-label" value="bug">
+            Bug
+        </label>
+
+        <label>
+            <input type="checkbox" name="task-label" value="feature">
+            Feature
+        </label>
+
+        <label>
+            <input type="checkbox" name="task-label" value="documentation">
+            Documentation
+        </label>
+    </div>
+</fieldset>
+
+        
+<div class="form-field">
+    <label for="task-due-date">Due Date</label>
+    <input
+        type="date"
+        id="task-due-date"
+        name="dueDate"
+    >
+    <small class="field-hint">
+        Optional — choose a deadline for this task.
+    </small>
+</div>
+
+
+        <div class="dialog-actions">
+            <button id="cancel-task-btn" type="button" class="secondary-btn">
+                Cancel
+            </button>
+
+            <button id="submit-task-btn" type="submit" class="primary-btn">
+    Create Task
+</button>
+        </div>
+    </form>
+</dialog>
+
+</body>
+</html>
